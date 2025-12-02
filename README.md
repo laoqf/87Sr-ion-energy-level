@@ -8,3 +8,5 @@ sympy
 pandas
 numpy
 plotly
+
+pip install streamlit sympy pandas numpy plotly
