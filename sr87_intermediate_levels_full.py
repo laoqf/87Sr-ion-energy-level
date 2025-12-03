@@ -9,6 +9,11 @@ from sympy import Rational
 from sympy.physics.wigner import clebsch_gordan
 from fractions import Fraction
 
+
+from matplotlib import colormaps as cmaps
+import matplotlib.colors as mcolors
+
+
 # Fixed B range and probability cutoff
 B_MIN = 0.0    # Gauss
 B_MAX = 300.0  # Gauss
@@ -36,7 +41,7 @@ mu_N = mu_N/h/10000
 # 87Sr nuclear spin and nuclear g-factor (in units of μ_N)
 I_Sr87 = 9/2
 gI_Sr87 = -131.7712e-6               # gI = mu_I*(1-sigma)/mu_B from the experiement data : Phys. Rev. Lett. 135, 193001 – Published 3 November, 2025
-gI_Sr87 = gI_Sr87*mu_B
+gI_Sr87 = gI_Sr87*mu_B/mu_N
 
 
 # Speed of light (for wavelength calculation)
@@ -54,6 +59,46 @@ def lande_gJ(L, S, J, gL=1.0, gS=2.002_319_304_362_56):
     return gL * term1 + gS * term2
 
 sr87_data = {
+    "88-5P1/2": {
+        "I": 0,
+        "L": 1,
+        "S": 1/2,
+        "J": 1/2,
+        "A_hfs": 0,                
+        "B_hfs": 0.0,                    
+        "gI": 0,                    #exp
+        "E0": 23715.19 * c_light * 100,   # cm^-1 → Hz
+    },
+    "88-5P3/2": {
+        "I": 0,
+        "L": 1,
+        "S": 1/2,
+        "J": 3/2,
+        "A_hfs": 0,                 
+        "B_hfs": 0,                  
+        "gI": 0,                    
+        "E0": 24516.65 * c_light * 100,
+    },
+    "88-4D3/2": {
+        "I": 0,
+        "L": 2,
+        "S": 1/2,
+        "J": 3/2,
+        "A_hfs": 0,               
+        "B_hfs": 0,                  
+        "gI": 0,                    
+        "E0": 14555.90 * c_light * 100,
+    },
+    "88-4D5/2": {
+        "I": 0,
+        "L": 2,
+        "S": 1/2,
+        "J": 5/2,
+        "A_hfs": 0,                
+        "B_hfs": 0,                 
+        "gI": 0,                    
+        "E0": 14836.24 * c_light * 100,
+    },
     "5S1/2": {
         "I": I_Sr87,
         "L": 0,
@@ -62,7 +107,7 @@ sr87_data = {
         "A_hfs": -1000.5e6,               # exp
         "B_hfs": 0.0,                     # J = 1/2 → no quadrupole term
         "gI": gI_Sr87,               # gI = mu_I*(1-sigma)/mu_B from the experiement data : Phys. Rev. Lett. 135, 193001 – Published 3 November, 2025
-        "E0": 0.0,                        # define ground as zero
+        "E0": -59e6 + 0.0,                        # define ground as zero
     },
     "5P1/2": {
         "I": I_Sr87,
@@ -72,7 +117,7 @@ sr87_data = {
         "A_hfs": -178.4e6,                # cal
         "B_hfs": 0.0,                     # J = 1/2 → no quadrupole term
         "gI": gI_Sr87,                    #exp
-        "E0": 23715.19 * c_light * 100,   # cm^-1 → Hz
+        "E0": 59e6 + 23715.19 * c_light * 100,   # cm^-1 → Hz
     },
     "5P3/2": {
         "I": I_Sr87,
@@ -82,7 +127,7 @@ sr87_data = {
         "A_hfs": -36.0e6,                 #exp
         "B_hfs": 88.5e6,                  #exp
         "gI": gI_Sr87,                    #exp
-        "E0": 24516.65 * c_light * 100,
+        "E0": -56e6 + 24516.65 * c_light * 100,
     },
     "4D3/2": {
         "I": I_Sr87,
@@ -92,7 +137,7 @@ sr87_data = {
         "A_hfs": -47.365e6,               #cal
         "B_hfs": 38.2e6,                  #cal
         "gI": gI_Sr87,                    #exp
-        "E0": 14555.90 * c_light * 100,
+        "E0": -206e6 + 14555.90 * c_light * 100,
     },
     "4D5/2": {
         "I": I_Sr87,
@@ -102,22 +147,56 @@ sr87_data = {
         "A_hfs": 2.1743e6,                #exp
         "B_hfs": 49.11e6,                 #exp
         "gI": gI_Sr87,                    #exp
-        "E0": 14836.24 * c_light * 100,
+        "E0": -207.7e6 + 14836.24 * c_light * 100,
     },
 }
 
-# symmetric color map by |mF|
-pair_colors = {
-    7: "#1f77b4",  # blue
-    6: "#ff7f0e",  # orange
-    5: "#2ca02c",  # green
-    4: "#d62728",  # red
-    3: "#9467bd",  # purple
-    2: "#8c564b",  # brown
-    1: "#7f7f7f",  # gray
-    0: "#000000",  # black for mF=0
-}
+# # symmetric color map by |mF|
+# pair_colors = {
+#     7: "#1f77b4",  # blue
+#     6: "#ff7f0e",  # orange
+#     5: "#2ca02c",  # green
+#     4: "#d62728",  # red
+#     3: "#9467bd",  # purple
+#     2: "#8c564b",  # brown
+#     1: "#7f7f7f",  # gray
+#     0: "#000000",  # black for mF=0
+# }
 
+
+# create symmetric diverging colormap for mF
+# modern Matplotlib API
+div_map = cmaps.get_cmap("coolwarm_r")
+
+def color_for_mF(mF, mF_max=7):
+    """
+    symmetric color map: mF=-mF_max → blue, mF=0 → white, mF=+mF_max → red
+    Output formatted as hex for Plotly.
+    """
+    # normalize from [-mF_max, mF_max] → [0, 1]
+    t = (mF + mF_max) / (2 * mF_max)
+    r, g, b, _ = div_map(t)
+    return mcolors.to_hex((r, g, b))
+
+
+# set1 = cmaps.get_cmap("tab10").colors  
+
+# # We need 8 colors: 7 for |mF|=1..7 and 1 for mF=0
+# # Set1 has 9 colors → we take first 8
+# pair_colors = set1[:7]        # for |mF| = 1..7
+# zero_color = set1[7]          # unique color for mF = 0
+
+# def color_for_mF(mF):
+#     """
+#     Symmetric Set1-based colormap:
+#       |mF| = 1..7 → same color for ±mF
+#       mF = 0       → distinct color
+#     """
+#     if mF == 0:
+#         return mcolors.to_hex(zero_color)
+#     else:
+#         idx = abs(mF) - 1      # maps |mF|=1→0, |mF|=7→6
+#         return mcolors.to_hex(pair_colors[int(round(idx))])
 
 for name, d in sr87_data.items():
     d["gJ"] = lande_gJ(d["L"], d["S"], d["J"])
@@ -416,45 +495,40 @@ else:
 
     sorted_mF = sorted(all_mF_set)
 
-    # build mF -> color map (same for all manifolds)
-    mF_colors = {}
-    for mF in sorted_mF:
-        key = abs(int(round(mF)))
-        mF_colors[mF] = pair_colors.get(key, "#000000")
-
-    # one legend entry per (manifold, mF)
-    legend_written = set()
+    # # build mF -> color map (same for all manifolds)
+    # mF_colors = {}
+    # for mF in sorted_mF:
+    #     key = abs(int(round(mF)))
+    #     mF_colors[mF] = pair_colors.get(key, "#000000")
 
     for m_index, manifold in enumerate(selected_manifolds):
         E0 = sr87_data[manifold]["E0"]
         I_val = sr87_data[manifold]["I"]
         J_val = sr87_data[manifold]["J"]
-        I_str = frac_str_ascii(I_val)   # e.g. "9/2"
-        J_str = frac_str_ascii(J_val)   # e.g. "1/2", "3/2", "5/2"
+        I_str = frac_str_ascii(I_val)
+        J_str = frac_str_ascii(J_val)
 
         eig_data, basis = eig_by_manifold[manifold]
         x_group = m_index * group_spacing
 
         for mF in sorted(eig_data.keys()):
             e_vals, _, _ = eig_data[mF]
-            color = mF_colors[mF]
+            color = color_for_mF(mF)
+
+            #color = mF_colors[mF]
 
             for n, E_hfs in enumerate(e_vals):
                 E_tot_GHz = (E0 + E_hfs) / 1e9
+
                 x_center = x_group + mF * x_scale_mF
                 x0 = x_center - half_width
                 x1 = x_center + half_width
 
-                # legend: exactly one entry per (manifold, mF)
-                key = (manifold, mF)
-                show_legend = key not in legend_written
-                if show_legend:
-                    legend_written.add(key)
-                    legend_label = (
-                        f"{manifold}: I={I_str}, J={J_str}, mF={int(round(mF))}"
-                    )
-                else:
-                    legend_label = None
+                # legend label for *this specific state*
+                legend_label = (
+                    f"{manifold}: J={J_str}, "
+                    f"mF={int(round(mF))}, n={n}"
+                )
 
                 fig.add_trace(
                     go.Scatter(
@@ -463,7 +537,7 @@ else:
                         mode="lines",
                         line=dict(color=color, width=2),
                         name=legend_label,
-                        showlegend=show_legend,
+                        showlegend=True,   # show every state in legend
                         hovertemplate=(
                             f"{manifold}"
                             f"<br>I={I_str}, J={J_str}"
@@ -476,12 +550,13 @@ else:
                 )
 
 
+
     fig.update_layout(
         title=f"87Sr⁺ hyperfine levels at B = {B_plot:.1f} G (color = mF)",
         xaxis=dict(visible=False),
         yaxis_title="Energy (GHz, E/h)",
         legend_title_text="mF",
-        height=650,
+        height=480,
         margin=dict(l=40, r=20, t=60, b=40),
     )
 
