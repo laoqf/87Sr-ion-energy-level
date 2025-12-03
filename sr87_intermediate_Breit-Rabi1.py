@@ -32,7 +32,7 @@ mu_N = mu_N/h/10000
 # 87Sr nuclear spin and nuclear g-factor (in units of μ_N)
 I_Sr87 = 9/2
 gI_Sr87 = -131.7712e-6               # gI = mu_I*(1-sigma)/mu_B from the experiement data : Phys. Rev. Lett. 135, 193001 – Published 3 November, 2025
-gI_Sr87 = gI_Sr87*mu_B
+gI_Sr87 = gI_Sr87*mu_B/mu_N
 
 
 # Speed of light (for wavelength calculation)
@@ -200,7 +200,7 @@ def hamiltonian_intermediate_B(level_name, B_G):
     if Bq != 0.0 and I >= 1.0 and J >= 1.0:
         Ival = float(I)
         Jval = float(J)
-        denom = 2 * Ival * (2 * Ival - 1) * 2 * Jval * (2 * Jval - 1)
+        denom = 2 * Ival * (2 * Ival - 1) * Jval * (2 * Jval - 1)
         IJ2 = IJ_dot @ IJ_dot
         termB = (3 * IJ2 + 1.5 * IJ_dot
                  - Ival * (Ival + 1) * Jval * (Jval + 1) * np.eye(dim)) / denom
@@ -312,18 +312,38 @@ def cached_F_vectors(level_name):
 # ==========================================================
 
 st.title("87Sr⁺ hyperfine levels – intermediate B (matrix diagonalization)")
-st.markdown(
-    """
-This app diagonalizes the full hyperfine + Zeeman Hamiltonian
-in the uncoupled basis $|I J m_I m_J\\rangle$ and shows the
-eigenstates ordered by eigenvalue for each fixed $m_F$.
-You can also inspect each eigenstate as a superposition of
+# st.markdown(
+#     """
+# This app diagonalizes the full hyperfine + Zeeman Hamiltonian
+# in the uncoupled basis $|I J m_I m_J\\rangle$ and shows the
+# eigenstates ordered by eigenvalue for each fixed $m_F$.
+# You can also inspect each eigenstate as a superposition of
 
-* $|I J m_I m_J\\rangle$ (uncoupled basis)
-* $|F m_F\\rangle$ (coupled basis via Clebsch–Gordan coefficients).
+# * $|I J m_I m_J\\rangle$ (uncoupled basis)
+# * $|F m_F\\rangle$ (coupled basis via Clebsch–Gordan coefficients).
+# """
+# )
+
+st.markdown(
+    r"""
+This app diagonalizes the full hyperfine + Zeeman Hamiltonian
+in the uncoupled basis $|I J m_I m_J\rangle$ and shows:
+
+* SPD-style short-line energy diagram vs $m_F$
+* Eigenstates ordered by energy in each $m_F$ block
+* Decomposition of each eigenstate in:
+  * $|I J m_I m_J\rangle$ basis (with Unicode fractions)
+  * $|F,m_F\rangle$ basis (with integer $F,m_F$)
+
+The Hamiltonian is expressed by
+$$
+\frac{H}{\mathrm{h}} = 
+\underbrace{A_{\mathrm{hfs}} \, \hat{I} \cdot \hat{J} + B_{\mathrm{hfs}} \, \frac{3(\hat{I} \cdot \hat{J})^2 + \frac{3}{2} (\hat{I} \cdot \hat{J}) - I(I+1)J(J+1) }{2I(I-1)J(J-1)}}_{\text{Hyperfine}}
++
+\underbrace{\frac{\mu_B}{\mathrm{h}}\, g_J \, \hat{J} \cdot \hat{B} + \frac{\mu_N}{\mathrm{h}}\, g_I \, \hat{I} \cdot \hat{B}}_{\text{Zeeman}}
+$$
 """
 )
-
 # --- controls ---
 
 level_name = st.selectbox(
