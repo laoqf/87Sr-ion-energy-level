@@ -9,3 +9,6 @@ Required package: streamlit sympy pandas numpy plotly
 4. streamlit run sr87_intermediate_levels_full_line.py
 5. streamlit run sr8887_intermediate_levels_full.py
 6. streamlit run sr87_intermediate_levels_full.py
+
+
+Running streamlit require an email address.
