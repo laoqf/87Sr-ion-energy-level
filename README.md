@@ -16,7 +16,7 @@ Running streamlit require an email address.
   ![page part2](/Figure/intro2.png)
   ![page part3](/Figure/intro3.png)
 
-  ## 2. There are 7 blocks in the page:
+  ## 2. 7 blocks in the page:
      
   **Block 1 - Introduction**: Brief intro about the program and the Hamiltonian of Zeeman splitting in Hyperfine Structure
      
