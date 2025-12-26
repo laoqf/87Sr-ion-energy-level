@@ -8,7 +8,7 @@ Required package: streamlit sympy pandas numpy plotly
 
 Brief Manual:
   1. After running the code above, a web page would be opened on the browser. Here is a sample of the default main page.
-    (\Figure\intro1.png)
+    (/Figure/intro1.png)
   2. There are 7 blocks in the page:
      Block 1: Biref intro about the program and the formula used in it
      Block 2: Selected states to shown on the Block 4 main figure
