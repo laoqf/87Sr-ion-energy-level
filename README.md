@@ -10,7 +10,7 @@ Running streamlit require an email address.
 
 # Brief Manual:
   ## 1. After running the code, a web page will automatically open in the browser.
-  Here is a sample of the default main page.
+  Here is an example of the default main page.
   
   ![page part1](/Figure/intro1.png)
   ![page part2](/Figure/intro2.png)
