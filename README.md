@@ -1,7 +1,7 @@
 # 87Sr-ion-energy-level
 Interactive chart of the energy levels of 87Sr+ ion
 
-Required package: streamlit sympy pandas numpy plotly, be careful about the version!
+Required package: streamlit sympy pandas numpy plotly, **be careful about the version!**
 
 1. pip install -r requirements.txt
 2. streamlit run sr87_intermediate_levels_full_line.py
