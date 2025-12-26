@@ -7,7 +7,7 @@ Required package: streamlit sympy pandas numpy plotly, **be careful about the ve
 2. streamlit run sr87_intermediate_levels_full_line.py
 
 # Brief Manual:
-  ## 1. After running the code above, a web page would be opened on the browser. 
+  ## 1. After running the code, a web page will automatically open in the browser.
   Here is a sample of the default main page.
   
   ![page part1](/Figure/intro1.png)
