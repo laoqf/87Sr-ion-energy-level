@@ -22,7 +22,7 @@ Running streamlit require an email address.
      
   **Block 2 - State Selection**: Selected states to be shown on the Block 4
      
-  **Block 3 - Sttaic Magnetic Field**: Provide two types of magentic field input for calculating the zeeman splitting in Block 4 & 5
+  **Block 3 - Static Magnetic Field**: Provide two types of magentic field input for calculating the zeeman splitting in Block 4 & 5
      
   **Block 4 - Main Figure**: Display the selected atomic states and their Zeeman sub levels
      
