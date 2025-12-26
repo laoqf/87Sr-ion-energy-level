@@ -23,10 +23,10 @@ Brief Manual:
      Block 4: Main figure to show the states
      
      Block 5: Calculation of selected two Zeeman sub levels
+
+     Block 6: eigenstate expressed in the |F,mF> and |mI,mJ> basis
      
-     Block 6: Relation of Zeeman splitting in side the selected state with magnetic field
-     
-     Block 7: eigenstate expressed in the |F,mF> and |mI,mJ> basis
+     Block 7: Relation of Zeeman splitting in side the selected state with magnetic field
 
   4. Inside the Block 5, there is a fold sub block, it shows the frequency difference with external static magnetic field, and calculate the insentitive point if availible.
       ![Transition Sub Block](/Figure/intro4.png)
