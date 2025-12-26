@@ -24,11 +24,15 @@ Required package: streamlit sympy pandas numpy plotly, **be careful about the ve
      
   **Block 4**: Main figure to show the states
      
-  **Block 5**: Calculation of selected two Zeeman sub levels, since there are two default levels in this block, if the related states is deleted in Block 2, there would be error, one solution is changing the defulat levels before delete the state in Block 2, the other solution is delete all states in Block 2 and add the only needed states then calculate.
+  **Block 5**: Calculation of selected two Zeeman sub levels
 
   **Block 6**: eigenstate expressed in the |F,mF> and |mI,mJ> basis
      
   **Block 7**: Relation of Zeeman splitting in side the selected state with magnetic field
+
+  ### Possible errors: 
+  1. Since there are two default levels in Block5, if the related states is deleted in Block 2, there would be error, one solution is changing the defulat levels before delete the state in Block 2, the other solution is delete all states in Block 2 and add the only needed states then calculate.
+  2. At the first time changing the B field value in Block 3, there would be some warning message, just ignore it.
 
   ## 3. Inside the Block 5, there is a fold sub block, it shows the frequency difference with external static magnetic field, and calculate the insentitive point if availible.
   
