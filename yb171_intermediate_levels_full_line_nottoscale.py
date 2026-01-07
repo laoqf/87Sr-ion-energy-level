@@ -1074,11 +1074,10 @@ else:
                         f"""
                     **{sel1} → {sel2} at B = {B_tr:.1f} G**
 
-                    - Δν = {dnu:.3f} Hz  
-                    - Δν = {dnu_GHz:.6f} GHz  
-                    - Δν = {dnu_THz:.6f} THz  
+                    - Δν = {dnu:_.3f} Hz  
 
-                    - λ = {wavelength_nm:.3f} nm
+
+                    - λ = {wavelength_nm:_.3f} nm
                     """
                     )
                     with st.expander("Transition frequency vs magnetic field", expanded=False):
