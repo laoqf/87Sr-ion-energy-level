@@ -344,6 +344,22 @@ def find_derivative_zero(B_vals, dnu_vals):
 
     return B_star
 
+# ----------------------------
+# Make an interpolation function
+# ----------------------------
+def derivative_at(B,B_vals, dnu_vals):
+    """
+    Return derivative d(Δν)/dB evaluated at arbitrary B,
+    using linear interpolation of the derivative array.
+    """
+
+    # derivative d(Δν)/dB
+    deriv = np.gradient(dnu_vals, B_vals)
+
+    # print(deriv)
+
+    return np.interp(B, B_vals, deriv)
+
 # ==========================================================
 # Cached calculation of energy branches vs B
 # ==========================================================
@@ -519,13 +535,13 @@ else:
             max_value=B_MAX,
             value=st.session_state.B_main,
             step=0.1,
-            format="%.2f",
+            format="%.3f",
             key="B_input",
             on_change=_sync_from_input,
         )
 
     B_plot = st.session_state.B_main
-    st.write(f"Current B: **{B_plot:.2f} G**")
+    st.write(f"Current B: **{B_plot:.3f} G**")
 
     with col_left:
         # ---- Main Figure BLOCK ----
@@ -929,11 +945,10 @@ else:
                         f"""
                     **{sel1} → {sel2} at B = {B_tr:.1f} G**
 
-                    - Δν = {dnu:.3f} Hz  
-                    - Δν = {dnu_GHz:.6f} GHz  
-                    - Δν = {dnu_THz:.6f} THz  
+                    - Δν = {dnu:_.3f} Hz  
+                    
 
-                    - λ = {wavelength_nm:.3f} nm
+                    - λ = {wavelength_nm:_.3f} nm
                     """
                     )
                     with st.expander("Transition frequency vs magnetic field", expanded=False):
@@ -988,6 +1003,13 @@ else:
                         else:
                             st.info("No extremum found (monotonic curve).")
 
+                        devB = derivative_at(B_plot, B_vals, dnu_GHz_curve) * 1e9 # from GHz/G to Hz/G
+
+                        st.markdown(
+                            f"""Derivate at B  = **{B_plot:.3f} G**  is **{devB:.3f} Hz/G**
+                            """
+                        )
+
                         fig_tr.update_layout(
                             title=f"Δν(B) for {sel1} → {sel2}",
                             xaxis_title="B (Gauss)",
@@ -996,6 +1018,8 @@ else:
                             margin=dict(l=40, r=20, t=40, b=40),
                         )
                         st.plotly_chart(fig_tr, width="stretch", key="transition_plot")
+
+                        
 
             else:
                 st.info("No states available for the current selection.")
@@ -1009,7 +1033,7 @@ else:
         level_name = st.selectbox(
             "Select manifold",
             options=list(sr87_data.keys()),
-            index=3,  # default: 4D5/2
+            index=4,  # default: 4D5/2
         )
 
         col1, col2 = st.columns(2)
@@ -1018,7 +1042,7 @@ else:
                 "Magnetic field range B (Gauss)",
                 0.0,
                 300.0,
-                (0.0, 200.0),
+                (0.0, 20.0),
                 step=1.0,
             )
         with col2:
@@ -1042,9 +1066,10 @@ else:
         for mF_index, mF in enumerate(mF_list):
             E_mF = branches[mF]  # shape (n_states, n_B)
             n_states = E_mF.shape[0]
-            color = palette[mF_index % len(palette)]
+            # color = palette[mF_index % len(palette)]
+            color = color_for_mF(mF)
             for n in range(n_states):
-                label = f"mF={mF:+.1f}, state #{n}"
+                label = f"mF={mF:+.1f}, n = {n}"
                 fig.add_trace(
                     go.Scatter(
                         x=B_vals,
