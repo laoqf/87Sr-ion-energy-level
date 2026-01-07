@@ -943,12 +943,12 @@ else:
 
                     st.markdown(
                         f"""
-                    **{sel1} → {sel2} at B = {B_tr:.1f} G**
+                    **{sel1} → {sel2} at B = {B_tr:.3f} G**
 
                     - Δν = {dnu:_.3f} Hz  
 
 
-                    - λ = {wavelength_nm:_.3f} nm
+                    - λ = {wavelength_nm:_.9f} nm
                     """
                     )
                     with st.expander("Transition frequency vs magnetic field", expanded=False):
@@ -1102,3 +1102,4 @@ else:
     where $p$ is the probability of each component.
     """
     )
+
